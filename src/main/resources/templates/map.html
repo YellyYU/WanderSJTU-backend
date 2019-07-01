@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>流浪交大</title>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"></meta>
+	<style>
+		html,body,#map{
+			height: 100%;
+			width:100%;
+			overflow: hidden;
+			margin:0;
+		}
+	</style>
+</head>
+<body>
+<div id="map"></div>
+<script src='/static/js/jquery.min.js'></script>
+<script src="https://api.map.baidu.com/api?v=2.0&ak=2oIXvO1rZQlkpx4L4AROANxYxrefKUDc"></script>
+<script src="http://mapv.baidu.com/build/mapv.min.js"></script>
+<script type="text/javascript">
+	var map = new BMap.Map('map',{enableMapClick:false})
+	var stCtrl = new BMap.PanoramaControl(); //构造全景控件
+	stCtrl.setOffset(new BMap.Size(20, 20));
+	map.addControl(stCtrl);//添加全景控件
+	//中心点
+	map.centerAndZoom(new BMap.Point(121.443287,31.03201), 18);
+	map.enableScrollWheelZoom();
+	//获得当前定位点
+	var geolocation = new BMap.Geolocation();
+	geolocation.enableSDKLocation();
+	geolocation.getCurrentPosition(r=>{
+		let point = r.point;
+		//无授权的情况
+		if (r.accuracy==null)
+			point = new BMap.Point(121.443287,31.03201)
+		var myIcon = new BMap.Icon("http://lbsyun.baidu.com/jsdemo/img/fox.gif", new BMap.Size(300,157));
+		var mk=new BMap.Marker(point,{icon:myIcon});
+		map.addOverlay(mk);
+	})
+
+	//暂时设置的三个故事点
+	$.ajax({
+		//连通之后把这里的url改成实际的url就行了
+		url:'/static/stories.json',
+		success:function(data){
+			for(let place of data){
+				let loc =new BMap.Point(place['location'][0],place['location'][1]);
+				let marker = new BMap.Marker(loc);
+				map.addOverlay(marker);
+				marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+				let opts = {
+				  width : 200,     // 信息窗口宽度
+				  height: 100,     // 信息窗口高度
+				  title:place['name']
+				}
+				let infoWindow = new BMap.InfoWindow(place['story'],opts);
+				marker.addEventListener("click",function(){
+					map.openInfoWindow(infoWindow,loc);
+				})
+			}
+		}
+	})
+</script>
+</body>
+</html>

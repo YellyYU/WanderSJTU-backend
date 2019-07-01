@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>流浪交大</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"></meta>
+	<link rel="stylesheet" href="/static/css/my.css">
+</head>
+<body>
+<div class="bg bg-blur"></div>
+<div class="content-box">
+	<p class="title">
+	登录
+	</p>
+    <div class="login-page">
+    	<div class="form-holder">
+	      <div class="form d-flex align-items-center">
+	        <div class="content">
+	          <div  class="form-validate myform">
+	            <div class="form-group">
+	              <input id="login-username" type="text" name="loginUsername" required data-msg="Please enter your username" class="input-material" AUTOCOMPLETE="OFF">
+	              <label for="login-username" class="label-material">用户名</label>
+	            </div>
+	            <div class="form-group">
+	              <input id="login-password" type="password" name="loginPassword" required data-msg="Please enter your password" class="input-material">
+	              <label for="login-password" class="label-material">密码</label>
+	            </div><button id="login" class="btn btn-primary" onclick="return login();">登录</button>
+	            <!-- This should be submit button but I replaced it with <a> for demo purposes-->
+	          </div><a href="#" class="forgot-pass">忘记密码？</a><br><small>尚无账号？ </small><a href="#" class="signup">绑定jaccount</a>
+	        </div>
+	      </div>
+    	</div>
+    </div>
+</div>
+<script src='/static/js/jquery.min.js'></script>
+<script type="text/javascript">
+	var materialInputs = $('input.input-material');
+
+    // activate labels for prefilled values
+    materialInputs.filter(function() { return $(this).val() !== ""; }).siblings('.label-material').addClass('active');
+
+    // move label on focus
+    materialInputs.on('focus', function () {
+        $(this).siblings('.label-material').addClass('active');
+    });
+
+    // remove/keep label on blur
+    materialInputs.on('blur', function () {
+        $(this).siblings('.label-material').removeClass('active');
+
+        if ($(this).val() !== '') {
+            $(this).siblings('.label-material').addClass('active');
+        } else {
+            $(this).siblings('.label-material').removeClass('active');
+        }
+    });
+    function login(){
+//    	location.href="map.html";
+
+    	 let usr = $('#login-username').val();
+    	 let pwd = $('#login-password').val();
+    	 $.ajax({
+			 url:'entrance',
+			 data:JSON.stringify({"user":usr,"pwd":pwd}),
+			 type:'post',
+			 contentType:'application/json',
+			 success:function(data){
+			     data=JSON.parse(data)
+			     if (data.msg=='success')
+                     window.location.href="map"
+                 else
+                     alert('用户名密码不匹配')
+			 }
+		 })
+
+        return false;
+    }
+</script>
+</body>
+</html>
